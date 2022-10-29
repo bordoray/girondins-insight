@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Girondins insights</title>
+        <script src="https://unpkg.com/maplibre-gl@2.1.9/dist/maplibre-gl.js"></script>
+        <link
+            href="https://unpkg.com/maplibre-gl@2.1.9/dist/maplibre-gl.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://bootswatch.com/4/cosmo/bootstrap.min.css"
+        />
+    </head>
+    <body>
+      <div style="padding:15px">
+        <table><tr><td><img style='width: 100px; height: auto' src="./img/Bordeaux.png"</td>
+          <td>
+        <script src="./json/girondins_oppenents_data.js"></script>
+        <b>Girondins insight</b>
+        <br>Adversaires de l'histoire des Girondins de Bordeaux en compétition officielle
+        <br><i>Source : footballdatabase.eu　　Dernière mise à jour : 29 octobre 2022</i>
+      </td></tr></table>
+      </div>
+         <!--to visualize your data:<br>
+1. Get yout access_token <a href="https://developers.facebook.com/tools/explorer/?method=GET&path=me%3Ffields%3Did%2Cname&version=v2.11" target="_blank">here</a> <br>
+2. paste your access token here →　<input type="text" id="inputoken" value="your access token"><br>
+3. <a href="#" onclick="visu()">VISUALIZE</a> -->
+        <div id="map" style="width: 100%; height: 700px"></div>
+        <div id="json"></div>
+        <script>
+            // const inbjson = JSON.parse("./json/rlfbinsight.json");
+            loadmap(inbjson);
+
+            function loadmap(inbjson) {
+                var popup = new maplibregl.Popup({ closeOnClick: false });
+
+                var map = new maplibregl.Map({
+                    container: "map",
+                    center: [15, 30],
+                    zoom: 2,
+                    // minZoom: 4,
+                    interactive: true,
+                    style: "https://api.maptiler.com/maps/7fb65f81-63dc-43bf-ac2e-74e2c12a2182/style.json?key=yhy9XyHzzmvrO4bEiJps",
+                    // style: "https://api.maptiler.com/maps/05592018-659c-4f31-97d7-a25b34b47b8e/style.json?key=yhy9XyHzzmvrO4bEiJps"
+                });
+                map.addControl(new maplibregl.NavigationControl());
+
+                map.on("load", function () {
+                    // sources
+                    console.log(inbjson);
+                    console.log("wait...");
+                    setTimeout(function () {
+                        map.addSource("teams", {
+                            type: "geojson",
+                            data: inbjson,
+                        });
+
+                        map.addLayer({
+                            id: "teams",
+                            source: "teams",
+                            type: "circle",
+                            paint: {
+                                "circle-radius": 4,
+                                "circle-color": "#10155c",
+                                "circle-opacity": 0.6,
+                            },
+                        });
+                    }, 2000);
+
+                    map.on("mousemove", function (e) {
+                        var fe = map.queryRenderedFeatures(e.point, {
+                            layers: ["teams"],
+                        });
+                        if (fe.length) {
+                            clon = fe[0].geometry.coordinates[0];
+                            clat = fe[0].geometry.coordinates[1];
+                            // place_name = fe[0].properties.original_team;
+                            // popupcontent = place_name + "<br><table><tr>";
+                            popupcontent = "<table><tr>";
+                            for (var j = 0; j < fe.length; j++) {
+                                if (j < 3) {
+                                    var n = fe.length - j - 1;
+                                    team_name = fe[0].properties.original_team;
+                                    popupcontent ="<br><table><tr>";
+                                    img_url = "./img/"+fe[n].properties.original_team.replace("'","")+".png";
+                                    popupcontent +=
+                                        "<td>　<img style='width: 100px; height: auto' src='" +
+                                        img_url +
+                                        "'/>　</td>";
+                                    popupcontent+= "<td><b>"+ team_name +"</b><br>"
+                                    popupcontent+= "Matches : "+ fe[n].properties.original_plays +"<br>"
+                                    popupcontent+= "Victoire(s) : "+ fe[n].properties.original_win_rate +"%<br>"
+                                    popupcontent+= "Nul(s) : "+ fe[n].properties.original_draw_rate +"%<br>"
+                                    popupcontent+= "Défaite(s) : "+ fe[n].properties.original_lose_rate +"%<br>"
+                                    popupcontent+= "Buts marqués : "+ fe[n].properties.total_goals +"<br>"
+                                    popupcontent+= "Burs encaissés : "+ parseInt(fe[n].properties.original_encaiss * fe[n].properties.original_plays) +"<br>"
+                                    popupcontent+= "Premier match : "+ fe[n].properties.original_first +"<br>"
+                                    popupcontent+= "Dernier match : "+ fe[n].properties.original_last +"<br>"
+                                    popupcontent+= "</td>"
+                                }
+                            }
+                            popup
+                                .setLngLat([clon, clat])
+                                .setHTML(popupcontent + "</tr></table>")
+                                .addTo(map);
+                        } else {
+                            popup.remove();
+                        }
+                    });
+                    console.log("Done!");
+                });
+            }
+        </script>
+    </body>
+</html>
