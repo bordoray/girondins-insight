@@ -3,17 +3,35 @@
     <head>
         <meta charset="UTF-8" />
         <title>Girondins insights</title>
-        <script src="https://unpkg.com/maplibre-gl@2.1.9/dist/maplibre-gl.js"></script>
+        <!-- <script src="https://unpkg.com/maplibre-gl@2.1.9/dist/maplibre-gl.js"></script> -->
+        <script src='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js'></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <link
+        <!-- <link
             href="https://unpkg.com/maplibre-gl@2.1.9/dist/maplibre-gl.css"
             rel="stylesheet"
-        />
+        /> -->
+        <link href='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css' rel='stylesheet' />
         <link
             rel="stylesheet"
             href="https://bootswatch.com/4/cosmo/bootstrap.min.css"
         />
         <style>
+        /* #menu {
+            background: rgba(9, 13, 79, 0);
+            position: absolute;
+            z-index: 1;
+            top: 10px;
+            left: 10px;
+            padding: 10px;
+            border-radius: 3px;
+            width: 120px;
+            border: 1px solid rgba(9, 13, 79, 0.4);
+            }
+
+        .choice {
+          padding-left: 10px
+        } */
+
         #overlay {
             position: absolute;
             top: 0;
@@ -56,14 +74,25 @@
         <script src="./json/girondins_oppenents_data.js"></script>
         <b>Girondins insight</b>
         <br>Adversaires de l'histoire des Girondins de Bordeaux en compétition officielle
-        <br><i>Source : <a href="https://www.footballdatabase.eu/" target="_blank">footballdatabase.eu</a>　　Mise à jour : 4 Novembre 2022</i>
+        <br><i>Détails en cliquant sur les points</i>
       </td></tr></table>
       </div>
          <!--to visualize your data:<br>
 1. Get yout access_token <a href="https://developers.facebook.com/tools/explorer/?method=GET&path=me%3Ffields%3Did%2Cname&version=v2.11" target="_blank">here</a> <br>
 2. paste your access token here →　<input type="text" id="inputoken" value="your access token"><br>
 3. <a href="#" onclick="visu()">VISUALIZE</a> -->
-        <div id="map" style="width: 100%; height: 700px"></div>
+
+        <div id="map" style="width: 100%; height: 700px">
+          <!-- <div id="menu">
+            <div class="choice">
+              <input type="checkbox" id="fr" name="fr" onchange="switchLayer()" checked>
+              <label for="fr">France</label>
+            </div>
+            <div class="choice">
+              <input type="checkbox" id="eu" name="eu" onchange="switchLayer()" checked>
+              <label for="eu">Europe</label>
+            </div></div> -->
+        </div>
         <div id="overlay"></div>
         <div id="popup">
             <div class="popupcontrols">
@@ -82,6 +111,7 @@
                 </div>
             </div>
         </div>
+        <div id="footer"><i>Source : <a href="https://www.footballdatabase.eu/" target="_blank">footballdatabase.eu</a>　　Mise à jour : 4 Novembre 2022　　　Auteur : <a href="https://twitter.com/bordoray" target="_blank">bordoray</a></i></div>
         <script>
 
             // initialize charts
@@ -103,7 +133,7 @@
                   },
                   title: {
                     display: false,
-                    text: 'Chart.js Pie Chart'
+                    text: 'Ration de victoires'
                   }
                 }
               },
@@ -259,80 +289,29 @@
                           barChart.data.datasets[0].data[0] = e.features[0].properties.total_goals;
                           barChart.data.datasets[0].data[1] = parseInt(e.features[0].properties.original_encaiss * e.features[0].properties.original_plays);
                           barChart.update();
-                          // // charts
-                          // // pie
-                          // data = [2]
-                          // const config = {
-                          //   type: 'pie',
-                          //   data: data,
-                          //   options: {
-                          //     responsive: true,
-                          //     plugins: {
-                          //       legend: {
-                          //         position: 'top',
-                          //       },
-                          //       title: {
-                          //         display: true,
-                          //         text: "vnd"
-                          //       }
-                          //     }
-                          //   },
-                          // };
 
-                          // const DATA_COUNT = 7;
-                          // const NUMBER_CFG = {count: DATA_COUNT, min: -100, max: 100};
-                          //
-                          // const labels = Utils.months({count: 7});
-                          // const databar = {
-                          //   labels: labels,
-                          //   datasets: [
-                          //     {
-                          //       label: 'Dataset 1',
-                          //       data: Utils.numbers(NUMBER_CFG),
-                          //       borderColor: Utils.CHART_COLORS.red,
-                          //       backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
-                          //     },
-                          //     {
-                          //       label: 'Dataset 2',
-                          //       data: Utils.numbers(NUMBER_CFG),
-                          //       borderColor: Utils.CHART_COLORS.blue,
-                          //       backgroundColor: Utils.transparentize(Utils.CHART_COLORS.blue, 0.5),
-                          //     }
-                          //   ]
-                          // };
-                          // const configbar = {
-                          //     type: 'bar',
-                          //     data: {
-                          //         datasets: [{
-                          //           data: [e.features[0].properties.total_goals, parseInt(e.features[0].properties.original_encaiss * e.features[0].properties.original_plays)],
-                          //         }],
-                          //         labels: ['marqué(s)', 'encaissé(s)'],
-                          //         backgroundColor: [
-                          //             'rgb(1, 23, 59)',
-                          //             'rgb(117, 1, 28)'
-                          //           ]
-                          //     },
-                          //     options: {
-                          //       responsive: true,
-                          //       plugins: {
-                          //         legend: {
-                          //           position: 'top',
-                          //         },
-                          //         title: {
-                          //           display: true,
-                          //           text: 'Nombre de buts'
-                          //         }
-                          //       }
-                          //     },
-                          //     };
-                            // const barChart = new Chart(
-                            //   document.getElementById('goalChart'),
-                            //   configbar
-                            // );
                         });
                     console.log("Done!");
                 });
             }
+
+            // change layers
+            // function switchLayer(){
+            //   france = document.getElementById("fr").checked;
+            //   europe = document.getElementById("eu").checked;
+            //   if (france == true && europe == true){
+            //     map.setFilter('teams', null);
+            //   } else if (france == true && europe == false){
+            //     map.setFilter('teams', ['==', ['get', 'original_pays'], 'France']);
+            //   } else if (france == false && europe == true){
+            //     map.setFilter('teams', ['!=', ['get', 'original_pays'], 'France']);
+            //   } else if (france == false && europe == false){
+            //     map.setFilter('teams', ['==', ['get', 'original_pays'], 'Petaouchnock']);;
+            //   }
+            //   console.log(france);
+            //   console.log(europe);
+            // }
+
             // popup
             // Initialize Variables
             var closePopup = document.getElementById("popupclose");
