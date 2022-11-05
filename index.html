@@ -4,6 +4,7 @@
         <meta charset="UTF-8" />
         <title>Girondins insights</title>
         <script src="https://unpkg.com/maplibre-gl@2.1.9/dist/maplibre-gl.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <link
             href="https://unpkg.com/maplibre-gl@2.1.9/dist/maplibre-gl.css"
             rel="stylesheet"
@@ -12,6 +13,41 @@
             rel="stylesheet"
             href="https://bootswatch.com/4/cosmo/bootstrap.min.css"
         />
+        <style>
+        #overlay {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            background: #999;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+            z-index: 100;
+            display: none;
+        }
+
+        #popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            background: #fff;
+            width: 500px;
+            /* height: 500px; */
+            margin-left: -250px; /*Half the value of width to center div*/
+            margin-top: -250px; /*Half the value of height to center div*/
+            z-index: 200;
+            display: none;
+        }
+        #popupclose {
+            float: right;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .popupcontent {
+      		padding: 10px;
+      	}
+
+      </style>
     </head>
     <body>
       <div style="padding:15px">
@@ -20,7 +56,7 @@
         <script src="./json/girondins_oppenents_data.js"></script>
         <b>Girondins insight</b>
         <br>Adversaires de l'histoire des Girondins de Bordeaux en compétition officielle
-        <br><i>Source : footballdatabase.eu　　Dernière mise à jour : 29 octobre 2022</i>
+        <br><i>Source : <a href="https://www.footballdatabase.eu/" target="_blank">footballdatabase.eu</a>　　Mise à jour : 4 Novembre 2022</i>
       </td></tr></table>
       </div>
          <!--to visualize your data:<br>
@@ -28,9 +64,92 @@
 2. paste your access token here →　<input type="text" id="inputoken" value="your access token"><br>
 3. <a href="#" onclick="visu()">VISUALIZE</a> -->
         <div id="map" style="width: 100%; height: 700px"></div>
-        <div id="json"></div>
+        <div id="overlay"></div>
+        <div id="popup">
+            <div class="popupcontrols">
+                <span id="popupclose">X</span>
+            </div>
+            <div class="popupcontent ">
+                <div class="popupcontent" id="popframe">
+                </div>
+                <div class="modal-body row">
+                  <div class="col-md-6">
+                    <canvas id="victoryChart" width="200" height="200"></canvas>
+                  </div>
+                  <div class="col-md-6">
+                    <canvas id="goalChart" width="200" height="200"></canvas>
+                  </div>
+                </div>
+            </div>
+        </div>
         <script>
-            // const inbjson = JSON.parse("./json/rlfbinsight.json");
+
+            // initialize charts
+            //pie
+            const configpie = {
+              type: 'doughnut',
+              data: {
+                labels: ["Victoires (%)", "Nuls (%)", "Défaites (%)"],
+                datasets: [{
+                  backgroundColor: ["#04034d","#646687","#75011c"],
+                  data: [70,20,20]
+                }],
+              },
+              options: {
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                  },
+                  title: {
+                    display: false,
+                    text: 'Chart.js Pie Chart'
+                  }
+                }
+              },
+            };
+
+            const pieChart = new Chart(
+              document.getElementById('victoryChart'),
+              configpie
+            );
+
+            //bar
+            const configbar = {
+                type: 'bar',
+                data: {
+                    datasets: [{
+                      data: [5, 1],
+                      backgroundColor: ["#04034d","#75011c"]
+                    }],
+                    labels: ['Buts marqués', 'Buts encaissés'],
+
+                },
+                options: {
+                  scales: {
+                      y: {
+                          ticks: {
+                              stepSize: 1
+                          }
+                      }
+                  },
+                  responsive: true,
+                  plugins: {
+                    legend: {
+                      display: false,
+                      position: 'top',
+                    },
+                    title: {
+                      display: false,
+                      text: 'Nombre de buts'
+                    }
+                  }
+                },
+                };
+              const barChart = new Chart(
+                document.getElementById('goalChart'),
+                configbar
+              );
             loadmap(inbjson);
 
             function loadmap(inbjson) {
@@ -82,7 +201,7 @@
                             for (var j = 0; j < fe.length; j++) {
                                 if (j < 3) {
                                     var n = fe.length - j - 1;
-                                    team_name = fe[0].properties.original_team;
+                                    team_name = fe[n].properties.original_team;
                                     popupcontent ="<br><table><tr>";
                                     img_url = "./img/"+fe[n].properties.original_team.replace("'","")+".png";
                                     popupcontent +=
@@ -90,12 +209,11 @@
                                         img_url +
                                         "'/>　</td>";
                                     popupcontent+= "<td><b>"+ team_name +"</b><br>"
-                                    popupcontent+= "Matches : "+ fe[n].properties.original_plays +"<br>"
-                                    popupcontent+= "Victoire(s) : "+ fe[n].properties.original_win_rate +"%<br>"
-                                    popupcontent+= "Nul(s) : "+ fe[n].properties.original_draw_rate +"%<br>"
-                                    popupcontent+= "Défaite(s) : "+ fe[n].properties.original_lose_rate +"%<br>"
-                                    popupcontent+= "Buts marqués : "+ fe[n].properties.total_goals +"<br>"
-                                    popupcontent+= "Burs encaissés : "+ parseInt(fe[n].properties.original_encaiss * fe[n].properties.original_plays) +"<br>"
+                                    popupcontent+= fe[n].properties.original_plays　+ " confrontation"
+                                    if (fe[n].properties.original_plays >= 2){
+                                      popupcontent+= "s"
+                                    }
+                                    popupcontent+= "<br>"
                                     popupcontent+= "Premier match : "+ fe[n].properties.original_first +"<br>"
                                     popupcontent+= "Dernier match : "+ fe[n].properties.original_last +"<br>"
                                     popupcontent+= "</td>"
@@ -109,9 +227,129 @@
                             popup.remove();
                         }
                     });
+                    map.on('click', 'teams', function (e) {
+                        // var coordinates = e.features[0].geometry.coordinates.slice();
+                          team_name = e.features[0].properties.original_team;
+                          popframecontent ="<br><table><tr>";
+                          img_url = "./img/"+e.features[0].properties.original_team.replace("'","")+".png";
+                          popframecontent +=
+                              "<td>　<img style='width: 100px; height: auto' src='" +
+                              img_url +
+                              "'/>　</td>";
+                          popframecontent+= "<td><b>"+ team_name +"</b><br>"
+                          popframecontent+= "Confrontations : "+ e.features[0].properties.original_plays +"<br>"
+                          // popframecontent+= "Victoire(s) : "+ e.features[0].properties.original_win_rate +"%<br>"
+                          // popframecontent+= "Nul(s) : "+ e.features[0].properties.original_draw_rate +"%<br>"
+                          // popframecontent+= "Défaite(s) : "+ e.features[0].properties.original_lose_rate +"%<br>"
+                          // popframecontent+= "Buts marqués : "+ e.features[0].properties.total_goals +"<br>"
+                          // popframecontent+= "Burs encaissés : "+ parseInt(e.features[0].properties.original_encaiss * e.features[0].properties.original_plays) +"<br>"
+                          popframecontent+= "Premier match : "+ e.features[0].properties.original_first +"<br>"
+                          popframecontent+= "Dernier match : "+ e.features[0].properties.original_last +"<br>"
+                          popframecontent+= "</td></tr></table>"
+
+                          overlay.style.display = 'block';
+                      	  popupdetail.style.display = 'block';
+                          document.getElementById("popframe").innerHTML = popframecontent;
+
+                          pieChart.data.datasets[0].data[0] = e.features[0].properties.original_win_rate;
+                          pieChart.data.datasets[0].data[1] = e.features[0].properties.original_draw_rate;
+                          pieChart.data.datasets[0].data[2] = e.features[0].properties.original_lose_rate;
+                          pieChart.update();
+
+                          barChart.data.datasets[0].data[0] = e.features[0].properties.total_goals;
+                          barChart.data.datasets[0].data[1] = parseInt(e.features[0].properties.original_encaiss * e.features[0].properties.original_plays);
+                          barChart.update();
+                          // // charts
+                          // // pie
+                          // data = [2]
+                          // const config = {
+                          //   type: 'pie',
+                          //   data: data,
+                          //   options: {
+                          //     responsive: true,
+                          //     plugins: {
+                          //       legend: {
+                          //         position: 'top',
+                          //       },
+                          //       title: {
+                          //         display: true,
+                          //         text: "vnd"
+                          //       }
+                          //     }
+                          //   },
+                          // };
+
+                          // const DATA_COUNT = 7;
+                          // const NUMBER_CFG = {count: DATA_COUNT, min: -100, max: 100};
+                          //
+                          // const labels = Utils.months({count: 7});
+                          // const databar = {
+                          //   labels: labels,
+                          //   datasets: [
+                          //     {
+                          //       label: 'Dataset 1',
+                          //       data: Utils.numbers(NUMBER_CFG),
+                          //       borderColor: Utils.CHART_COLORS.red,
+                          //       backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
+                          //     },
+                          //     {
+                          //       label: 'Dataset 2',
+                          //       data: Utils.numbers(NUMBER_CFG),
+                          //       borderColor: Utils.CHART_COLORS.blue,
+                          //       backgroundColor: Utils.transparentize(Utils.CHART_COLORS.blue, 0.5),
+                          //     }
+                          //   ]
+                          // };
+                          // const configbar = {
+                          //     type: 'bar',
+                          //     data: {
+                          //         datasets: [{
+                          //           data: [e.features[0].properties.total_goals, parseInt(e.features[0].properties.original_encaiss * e.features[0].properties.original_plays)],
+                          //         }],
+                          //         labels: ['marqué(s)', 'encaissé(s)'],
+                          //         backgroundColor: [
+                          //             'rgb(1, 23, 59)',
+                          //             'rgb(117, 1, 28)'
+                          //           ]
+                          //     },
+                          //     options: {
+                          //       responsive: true,
+                          //       plugins: {
+                          //         legend: {
+                          //           position: 'top',
+                          //         },
+                          //         title: {
+                          //           display: true,
+                          //           text: 'Nombre de buts'
+                          //         }
+                          //       }
+                          //     },
+                          //     };
+                            // const barChart = new Chart(
+                            //   document.getElementById('goalChart'),
+                            //   configbar
+                            // );
+                        });
                     console.log("Done!");
                 });
             }
+            // popup
+            // Initialize Variables
+            var closePopup = document.getElementById("popupclose");
+            var overlay = document.getElementById("overlay");
+            var popupdetail = document.getElementById("popup");
+
+            // Close Popup Event
+            closePopup.onclick = function() {
+                overlay.style.display = 'none';
+                popupdetail.style.display = 'none';
+            };
+            overlay.onclick = function() {
+                overlay.style.display = 'none';
+                popupdetail.style.display = 'none';
+            };
+
+
         </script>
     </body>
 </html>
