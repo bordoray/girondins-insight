@@ -183,7 +183,7 @@
             loadmap(inbjson);
 
             function loadmap(inbjson) {
-                var popup = new maplibregl.Popup({ closeOnClick: false });
+                var popup = new maplibregl.Popup({ closeOnClick: false, closeButton: false });
 
                 var map = new maplibregl.Map({
                     container: "map",
@@ -235,7 +235,7 @@
                                     popupcontent ="<br><table><tr>";
                                     img_url = "./img/"+fe[n].properties.original_team.replace("'","")+".png";
                                     popupcontent +=
-                                        "<td>　<img style='width: 100px; height: auto' src='" +
+                                        "<td>　<img style='width: 50px; height: auto' src='" +
                                         img_url +
                                         "'/>　</td>";
                                     popupcontent+= "<td><b>"+ team_name +"</b><br>"
@@ -243,9 +243,9 @@
                                     if (fe[n].properties.original_plays >= 2){
                                       popupcontent+= "s"
                                     }
-                                    popupcontent+= "<br>"
-                                    popupcontent+= "Premier match : "+ fe[n].properties.original_first +"<br>"
-                                    popupcontent+= "Dernier match : "+ fe[n].properties.original_last +"<br>"
+                                    // popupcontent+= "<br>"
+                                    // popupcontent+= "Premier match : "+ fe[n].properties.original_first +"<br>"
+                                    // popupcontent+= "Dernier match : "+ fe[n].properties.original_last +"<br>"
                                     popupcontent+= "</td>"
                                 }
                             }
