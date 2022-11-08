@@ -16,7 +16,7 @@
             href="https://bootswatch.com/4/cosmo/bootstrap.min.css"
         />
         <style>
-        /* #menu {
+        #menu {
             background: rgba(9, 13, 79, 0);
             position: absolute;
             z-index: 1;
@@ -30,7 +30,7 @@
 
         .choice {
           padding-left: 10px
-        } */
+        }
 
         #overlay {
             position: absolute;
@@ -83,7 +83,7 @@
 3. <a href="#" onclick="visu()">VISUALIZE</a> -->
 
         <div id="map" style="width: 100%; height: 700px">
-          <!-- <div id="menu">
+          <div id="menu">
             <div class="choice">
               <input type="checkbox" id="fr" name="fr" onchange="switchLayer()" checked>
               <label for="fr">France</label>
@@ -91,7 +91,7 @@
             <div class="choice">
               <input type="checkbox" id="eu" name="eu" onchange="switchLayer()" checked>
               <label for="eu">Europe</label>
-            </div></div> -->
+            </div></div>
         </div>
         <div id="overlay"></div>
         <div id="popup">
@@ -111,7 +111,7 @@
                 </div>
             </div>
         </div>
-        <div id="footer"><i>Source : <a href="https://www.footballdatabase.eu/" target="_blank">footballdatabase.eu</a>　　Mise à jour : 4 Novembre 2022　　　Auteur : <a href="https://twitter.com/bordoray" target="_blank">bordoray</a></i></div>
+        <div id="footer"><i>Source : <a href="https://www.footballdatabase.eu/" target="_blank">footballdatabase.eu</a>　　Mise à jour : 8 Novembre 2022　　　Auteur : <a href="https://twitter.com/bordoray" target="_blank">bordoray</a></i></div>
         <script>
 
             // initialize charts
@@ -180,9 +180,9 @@
                 document.getElementById('goalChart'),
                 configbar
               );
-            loadmap(inbjson);
+            // loadmap(inbjson);
 
-            function loadmap(inbjson) {
+            // function loadmap(inbjson) {
                 var popup = new maplibregl.Popup({ closeOnClick: false, closeButton: false });
 
                 var map = new maplibregl.Map({
@@ -198,7 +198,7 @@
 
                 map.on("load", function () {
                     // sources
-                    console.log(inbjson);
+                    // console.log(inbjson);
                     console.log("wait...");
                     setTimeout(function () {
                         map.addSource("teams", {
@@ -293,24 +293,22 @@
                         });
                     console.log("Done!");
                 });
-            }
+            // }
 
             // change layers
-            // function switchLayer(){
-            //   france = document.getElementById("fr").checked;
-            //   europe = document.getElementById("eu").checked;
-            //   if (france == true && europe == true){
-            //     map.setFilter('teams', null);
-            //   } else if (france == true && europe == false){
-            //     map.setFilter('teams', ['==', ['get', 'original_pays'], 'France']);
-            //   } else if (france == false && europe == true){
-            //     map.setFilter('teams', ['!=', ['get', 'original_pays'], 'France']);
-            //   } else if (france == false && europe == false){
-            //     map.setFilter('teams', ['==', ['get', 'original_pays'], 'Petaouchnock']);;
-            //   }
-            //   console.log(france);
-            //   console.log(europe);
-            // }
+            function switchLayer(){
+              france = document.getElementById("fr").checked;
+              europe = document.getElementById("eu").checked;
+              if (france == true && europe == true){
+                map.setFilter('teams', null);
+              } else if (france == true && europe == false){
+                map.setFilter('teams', ['==', ['get', 'original_pays'], 'France']);
+              } else if (france == false && europe == true){
+                map.setFilter('teams', ['!=', ['get', 'original_pays'], 'France']);
+              } else if (france == false && europe == false){
+                map.setFilter('teams', ['==', ['get', 'original_pays'], 'Petaouchnock']);;
+              }
+            }
 
             // popup
             // Initialize Variables
