@@ -52,7 +52,7 @@
             width: 500px;
             /* height: 500px; */
             margin-left: -250px; /*Half the value of width to center div*/
-            margin-top: -250px; /*Half the value of height to center div*/
+            margin-top: -300px; /*Half the value of height to center div*/
             z-index: 200;
             display: none;
         }
@@ -92,26 +92,28 @@
               <input type="checkbox" id="eu" name="eu" onchange="switchLayer()" checked>
               <label for="eu">Europe</label>
             </div></div>
+            <div id="overlay"></div>
+                    <div id="popup">
+                        <div class="popupcontrols">
+                            <span id="popupclose">X</span>
+                        </div>
+                        <div class="popupcontent ">
+                            <div class="popupcontent" id="popframe">
+                            </div>
+                            <div class="modal-body row">
+                              <div class="col-md-6">
+                                <canvas id="victoryChart" width="200" height="200"></canvas>
+                              </div>
+                              <div class="col-md-6">
+                                <canvas id="goalChart" width="200" height="200"></canvas>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
         </div>
-        <div id="overlay"></div>
-        <div id="popup">
-            <div class="popupcontrols">
-                <span id="popupclose">X</span>
-            </div>
-            <div class="popupcontent ">
-                <div class="popupcontent" id="popframe">
-                </div>
-                <div class="modal-body row">
-                  <div class="col-md-6">
-                    <canvas id="victoryChart" width="200" height="200"></canvas>
-                  </div>
-                  <div class="col-md-6">
-                    <canvas id="goalChart" width="200" height="200"></canvas>
-                  </div>
-                </div>
-            </div>
-        </div>
-        <div id="footer"><i>Source : <a href="https://www.footballdatabase.eu/" target="_blank">footballdatabase.eu</a>　　Mise à jour : 8 Novembre 2022　　　Auteur : <a href="https://twitter.com/bordoray" target="_blank">bordoray</a></i></div>
+
+
+        <div id="footer"><i>Source : <a href="https://www.footballdatabase.eu/" target="_blank">footballdatabase.eu</a>　　Dernière mise à jour : 29 Novembre 2022　　　Auteur : <a href="https://twitter.com/bordoray" target="_blank">bordoray</a></i></div>
         <script>
 
             // initialize charts
