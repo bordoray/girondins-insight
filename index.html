@@ -235,7 +235,7 @@
                                     var n = fe.length - j - 1;
                                     team_name = fe[n].properties.original_team;
                                     popupcontent ="<br><table><tr>";
-                                    img_url = "./img/"+fe[n].properties.original_team.replace("'","")+".png";
+                                    img_url = "./img/"+fe[n].properties.original_team.replace("'","").replace("î","i")+".png";
                                     popupcontent +=
                                         "<td>　<img style='width: 50px; height: auto' src='" +
                                         img_url +
@@ -263,7 +263,7 @@
                         // var coordinates = e.features[0].geometry.coordinates.slice();
                           team_name = e.features[0].properties.original_team;
                           popframecontent ="<br><table><tr>";
-                          img_url = "./img/"+e.features[0].properties.original_team.replace("'","")+".png";
+                          img_url = "./img/"+e.features[0].properties.original_team.replace("'","").replace("î","i")+".png";
                           popframecontent +=
                               "<td>　<img style='width: 100px; height: auto' src='" +
                               img_url +
